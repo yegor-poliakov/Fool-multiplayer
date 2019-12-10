@@ -1,0 +1,304 @@
+body {
+    margin: 0%;
+    max-width: 1200px;
+    max-height: 675px;
+    background-color: rgb(20, 100, 20);
+}
+
+table {
+    width: 100%;
+    height: 100%;
+    border: no-border;
+    border-collapse: collapse;
+}
+
+tr {
+    height: 31%;
+}
+
+td {
+    width: 20%;
+}
+
+.left {
+    width: 20%;
+    height: 32%;
+}
+
+.middle {
+    width: 40%;
+}
+
+.bottom {
+    width: 60%;
+}
+
+.desk {
+    background: rgb(13, 150, 13);
+    border-radius: 20%;
+}
+
+.top-row {
+    height: 7%;
+    background-color: rgb(163, 73, 164);
+}
+
+.text {
+    font: bold 100% Verdana;
+    color: white;
+    padding: 2px 4px;
+    margin-inline-start: 1%;
+    margin-inline-end: 5%;
+    margin-block-start: 0%;
+    margin-block-end: 0%;
+}
+
+.title-text {
+    font-family: Old English Text MT;
+    font-size: 200%;
+    vertical-align: top;
+    margin-inline-start: 5%;
+}
+
+.remaining-cards {
+    margin-top: -23%;
+    text-align: center;
+    text-indent: 3%;
+}
+
+.name {
+    text-align: center;
+    font-size: 130%;
+}
+
+.hand {
+    box-sizing: border-box;
+    width: 98%;
+    height: 67%;
+    vertical-align: bottom;
+}
+
+.small-hand {
+    width: 230%;
+    height: 72%;
+}
+
+.big-hand {
+    width: 32%;
+    height: 67%;
+}
+
+.card {
+    display: inline-block;
+    background: url("invisible.png") no-repeat;
+    background-size: cover;
+    border: #000000 solid 2px;
+    border-radius: 10%;
+    width: 16%;
+    height: 100%;
+}
+
+.card-mid {
+    width: 35%;
+    height: 110%;
+}
+
+.invisible {
+    background-image: url("invisible.png");
+    overflow: hidden;
+}
+
+.deck-card {
+    display: block;
+    background: rgb(163, 73, 164);
+    z-index: 0;
+    margin: auto;
+    margin-top: -22%;
+    width: 57%;
+    height: 48%;
+}
+
+.trump-card {
+    display: block;
+    background: white url("visible.png") no-repeat;
+    background-size: cover;
+    margin: 5% 0% 0% 30.75%;
+    width: 36%;
+    height: 65%;
+}
+
+
+.button-cell {
+    display: table-cell;
+    float: right;
+    width: 89px;
+    height: 140px;
+    margin: 10px;
+}
+
+.button:hover {
+    border: solid 3px white;
+}
+
+.button {
+    border: solid transparent 3px;
+}
+
+.button-player2 {
+    margin: 2px 0px 80px 0px;
+}
+
+.new-game {
+    background-image: url("new-game.png");
+    margin:15px 0px 0px 30px;
+    border:solid thin black;
+}
+
+
+/* Clubs */
+.C6 {
+    background-image: url("card-img/6C.png");
+}
+
+.C7 {
+    background-image: url("card-img/7C.png");
+}
+
+.C8 {
+    background-image: url("card-img/8C.png");
+}
+
+.C9 {
+    background-image: url("card-img/9C.png");
+}
+
+.C10 {
+    background-image: url("card-img/10C.png");
+}
+
+.CA {
+    background-image: url("card-img/AC.png");
+}
+
+.CJ {
+    background-image: url("card-img/JC.png");
+}
+
+.CQ {
+    background-image: url("card-img/QC.png");
+}
+
+.CK {
+    background-image: url("card-img/KC.png");
+}
+
+/* Spades */
+.S6 {
+    background-image: url("card-img/6S.png");
+}
+
+.S7 {
+    background-image: url("card-img/7S.png");
+}
+
+.S8 {
+    background-image: url("card-img/8S.png");
+}
+
+.S9 {
+    background-image: url("card-img/9S.png");
+}
+
+.S10 {
+    background-image: url("card-img/10S.png");
+}
+
+.SA {
+    background-image: url("card-img/AS.png");
+}
+
+.SJ {
+    background-image: url("card-img/JS.png");
+}
+
+.SQ {
+    background-image: url("card-img/QS.png");
+}
+
+.SK {
+    background-image: url("card-img/KS.png");
+}
+
+/* Diamonds */
+.D6 {
+    background-image: url("card-img/6D.png");
+}
+
+.D7 {
+    background-image: url("card-img/7D.png");
+}
+
+.D8 {
+    background-image: url("card-img/8D.png");
+}
+
+.D9 {
+    background-image: url("card-img/9D.png");
+}
+
+.D10 {
+    background-image: url("card-img/10D.png");
+}
+
+.DA {
+    background-image: url("card-img/AD.png");
+}
+
+.DJ {
+    background-image: url("card-img/JD.png");
+}
+
+.DQ {
+    background-image: url("card-img/QD.png");
+}
+
+.DK {
+    background-image: url("card-img/KD.png");
+}
+
+/* Hearts */
+.H6 {
+    background-image: url("card-img/6H.png");
+}
+
+.H7 {
+    background-image: url("card-img/7H.png");
+}
+
+.H8 {
+    background-image: url("card-img/8H.png");
+}
+
+.H9 {
+    background-image: url("card-img/9H.png");
+}
+
+.H10 {
+    background-image: url("card-img/10H.png");
+}
+
+.HA {
+    background-image: url("card-img/AH.png");
+}
+
+.HJ {
+    background-image: url("card-img/JH.png");
+}
+
+.HQ {
+    background-image: url("card-img/QH.png");
+}
+
+.HK {
+    background-image: url("card-img/KH.png");
+}

@@ -9,42 +9,20 @@ public class Deck {
     public Player[] players;
     public String trump;
 
-    /*  */
+    /* set the initial state of the game */
     public Deck(int numberOfPlayers, int numberOfCards) throws Exception {
         deckOfCards = createDeck(numberOfCards);
         trump = trumpToString(deckOfCards.get(numberOfCards - 1).suit);
         players = createPlayers(numberOfPlayers);
-
-        ArrayList<Card> hand = new ArrayList<>();
-        for (int i = 0; i < players.length; i++) {
-            hand.clear();
-            for (int j = 0; j < 6; j++) {
-                Card card = deckOfCards.remove(0);
-                hand.add(card);
-            }
-            players[i].setPlayerHand(hand);
-        }
-
+        distributeCards();
         readyPlayerOne(players);
-
-        if (lowestTrump1 < lowestTrump2) {
-            firstPlayer.activityStatus = true;
-            firstPlayer.offence = true;
-        } else if (highestRank1 > highestRank2) {
-            firstPlayer.activityStatus = true;
-            firstPlayer.offence = true;
-        } else {
-            secondPlayer.activityStatus = true;
-            secondPlayer.offence = true;
-        }
-
     }
 
     /* create a deck of cards, shuffle it, update trump cards*/
     public static ArrayList<Card> createDeck(int numberOfCards) throws Exception {
         ArrayList<Card> deckOfCards = new ArrayList<Card>();
-        if (numberOfCards != 36 || numberOfCards != 52){
-            throw new Exception("Number of cards is nor 36, nor 52");
+        if (numberOfCards != 36 || numberOfCards != 52) {
+            throw new Exception("Number of cards is neither 36, nor 52");
         }
 
         for (int i = 0; i < numberOfCards; i++) {
@@ -74,6 +52,7 @@ public class Deck {
         }
         Collections.shuffle(deckOfCards);
 
+        /* make trump cards' status "trump"*/
         for (Card card : deckOfCards) {
             if (deckOfCards.get(numberOfCards - 1).suit == card.suit) {
                 card.isTrump = true;
@@ -83,8 +62,8 @@ public class Deck {
         return deckOfCards;
     }
 
-    /* set the trump String to display if no trump card in place */
-    public static String trumpToString(Suit suit){
+    /* set the trump String to display if there is no trump card in place */
+    public static String trumpToString(Suit suit) {
         switch (suit) {
             case Spades:
                 return "Spades";
@@ -99,8 +78,8 @@ public class Deck {
 
     /* create players with empty hands, include AI if there is only one player*/
     public static Player[] createPlayers(int numberOfPlayers) throws Exception {
-        if (numberOfPlayers < 1){
-            throw new Exception("Number of players is less than 1-");
+        if (numberOfPlayers < 1) {
+            throw new Exception("Number of players is less than 1");
         }
 
         int numberOfAis = 0;
@@ -127,90 +106,79 @@ public class Deck {
         return players;
     }
 
-    /* Compare all player hands to find the lowest trump or the highest regular card*/
-    public static void readyPlayerOne(Player[] players) throws Exception {
+    /* distribute cards from deck between players */
+    public void distributeCards() {
+        ArrayList<Card> hand = new ArrayList<>();
+        for (int i = 0; i < players.length; i++) {
+            hand.clear();
+            for (int j = 0; j < 6; j++) {
+                Card card = deckOfCards.remove(0);
+                hand.add(card);
+            }
+            players[i].setPlayerHand(hand);
+        }
+    }
+
+    /* compare all player hands to find the lowest trump or the highest regular card*/
+    public void readyPlayerOne(Player[] players) throws Exception {
         int lowestRankTrump = -1;
         int highestRankRegular = -1;
-        int playerIndex = 0;
+        int playerTrumpIndex = 0;
+        int playerRegularIndex = 0;
 
         for (int i = 0; i < players.length; i++) {
             for (int j = 0; j < players[i].getPlayerHand().size(); j++) {
                 Card card = players[i].getPlayerHand().get(j);
                 if (card.isTrump && card.getRank() < lowestRankTrump) {
                     lowestRankTrump = card.getRank();
-                    playerIndex = i;
+                    playerTrumpIndex = i;
+                }
+                if (!card.isTrump && card.getRank() > highestRankRegular) {
+                    highestRankRegular = card.getRank();
+                    playerRegularIndex = i;
                 }
             }
         }
 
         if (lowestRankTrump >= 0) {
-            players[playerIndex].setActivityStatus(true);
-            players[playerIndex].setOffenceStatus(true);
-            return;
-        }
-
-        for (int i = 0; i < players.length; i++) {
-            for (int j = 0; j < players[i].getPlayerHand().size(); j++) {
-                Card card = players[i].getPlayerHand().get(j);
-                if (card.getRank() > highestRankRegular) {
-                    highestRankRegular = card.getRank();
-                    playerIndex = i;
-                }
-            }
-        }
-
-        if (highestRankRegular >= 0) {
-            players[playerIndex].setActivityStatus(true);
-            players[playerIndex].setOffenceStatus(true);
-            return;
+            players[playerTrumpIndex].setActivityStatus(true);
+            players[playerTrumpIndex].setOffenceStatus(true);
+        } else if (highestRankRegular >= 0) {
+            players[playerRegularIndex].setActivityStatus(true);
+            players[playerRegularIndex].setOffenceStatus(true);
         } else {
             throw new Exception("Unable to figure out the first player");
         }
-    }
 
-    /* React to user input */
-    public Stage move(int playerNumber, int cardNumber) throws Exception {
-        Player player;
-        switch (playerNumber) {
-            case 0:
-                player = firstPlayer;
-                break;
-            case 1:
-                player = secondPlayer;
-                break;
-            default:
-                throw new Exception("Someone has tried to feed false data instead of player number");
-        }
-        if (player.offence) {
-            return attack(player, player.playerHand.get(cardNumber));
-        } else {
-            return defend(player, player.playerHand.get(cardNumber));
+        /* initialize AI attack in case the first player is AI */
+        if (!players[findActiveOffender(players)].isHuman()){
+            int iniCardIndex = pickAttackCard(players[findActiveOffender(players)].getPlayerHand());
+            attack(players[findActiveOffender(players)], players[findActiveOffender(players)].playerHand.get(iniCardIndex));
+            return;
         }
     }
 
-    public Stage move(int playerNumber) throws Exception {
-        Player player;
-        switch (playerNumber) {
-            case 0:
-                player = firstPlayer;
-                break;
-            case 1:
-                player = secondPlayer;
-                break;
-            default:
-                throw new Exception("Someone has tried to feed false data instead of player number");
-        }
-        if (player.offence) {
-            return retreat(player);
+    /* react to client input */
+    public Stage move(int playerNumber, int cardNumber) {
+        if (players[playerNumber].isOffenceStatus()) {
+            return attack(players[playerNumber], players[playerNumber].playerHand.get(cardNumber));
         } else {
-            return giveUp(player);
+            return defend(players[playerNumber], players[playerNumber].playerHand.get(cardNumber));
+        }
+    }
+
+    public Stage move(int playerNumber) {
+        if (players[playerNumber].isOffenceStatus()) {
+            return retreat(players[playerNumber]);
+        } else {
+            return giveUp(players[playerNumber]);
         }
     }
 
     public Stage attack(Player player, Card card) {
         boolean aiResponse = false;
         boolean attackSuccess = false;
-        if (player == firstPlayer) {
+        if () {
             aiResponse = true;
         }
 
@@ -350,44 +318,29 @@ public class Deck {
         return endGame();
     }
 
-    public Stage replenish() {
-        Player offender = firstPlayer;
-        Player defender = secondPlayer;
-        if (firstPlayer.isOffence()) {
-            offender = firstPlayer;
-            defender = secondPlayer;
-        } else if (secondPlayer.isOffence()) {
-            offender = secondPlayer;
-            defender = firstPlayer;
+    /* add necessary cards to player hands after the round if the deck is not empty
+        the parameter playerNumber has to be an index of either primary offender or defender
+    */
+    public Stage replenish(int playerNumber) {
+        if (!players[playerNumber].isOffenceStatus()) {
+            playerNumber = playerNumber % (playerNumber + players.length);
         }
 
-        int missingCards = 0;
-        if (6 - firstPlayer.playerHand.size() > 0) {
-            missingCards += 6 - firstPlayer.playerHand.size();
-        }
-        if (6 - secondPlayer.playerHand.size() > 0) {
-            missingCards += 6 - secondPlayer.playerHand.size();
-        }
-
-        for (int i = 0; i < missingCards; i++) {
-            if (deckOfCards.size() > 0) {
-                if (offender.playerHand.size() < 6) {
-                    offender.playerHand.add(deckOfCards.remove(0));
-                } else if (defender.playerHand.size() < 6) {
-                    defender.playerHand.add(deckOfCards.remove(0));
+        for (int i = playerNumber; i < deckOfCards.size() + playerNumber; i++) {
+            if (deckOfCards.size() != 0) {
+                if (players[i].getPlayerHand().size() < 6) {
+                    players[i % players.length].getPlayerHand().add(deckOfCards.remove(0));
                 }
-                Player interLude;
-                interLude = defender;
-                defender = offender;
-                offender = interLude;
+            } else {
+                break;
             }
         }
 
         return Stage.Continue;
     }
 
-    public void switchPlayers() {
-        firstPlayer.activityStatus = !(firstPlayer.activityStatus);
+    public void switchPlayers(int playerNumber) {
+        playerNumber = playerNumber % (playerNumber + players.length);
         secondPlayer.activityStatus = !(secondPlayer.activityStatus);
     }
 
@@ -478,4 +431,21 @@ public class Deck {
         return lowestAttackCard;
     }
 
+    public static int findDefender(Player[] players) throws Exception {
+        for (int i = 0; i < players.length; i++) {
+            if (!players[i].isOffenceStatus()) {
+                return i;
+            }
+        }
+        throw new Exception("Missing defender");
+    }
+
+    public static int findActiveOffender(Player[] players) throws Exception {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i].isOffenceStatus() && players[i].isActivityStatus()) {
+                return i;
+            }
+        }
+        throw new Exception("Missing active offender");
+    }
 }

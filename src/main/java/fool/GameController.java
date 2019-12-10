@@ -3,6 +3,7 @@ import fool.domain.*;
 import fool.dto.*;
 import fool.gameLogic.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,8 +15,9 @@ public class GameController {
 
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/deck", method = RequestMethod.GET)
-    public GameState create() throws Exception {
-        Deck deck = new Deck();
+    public GameState create(@RequestParam(value = "numberOfPlayers", defaultValue = "1") int numberOfPlayers,
+                            @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards) throws Exception {
+        Deck deck = new Deck(numberOfPlayers, numberOfCards);
         UserGame deckForDB = deckConverter.deckToUserGame(Stage.Continue, deck);
         deckForDB = gameRepository.save(deckForDB);
         GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), Stage.Continue, deck);

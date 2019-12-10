@@ -1,0 +1,326 @@
+body {
+    font-family: Old English Text MT;
+    font-size: 100%;
+    margin: 0%;
+}
+
+.back {
+    float: left;
+}
+
+.left {
+    width: 200px;
+    height: 750px;
+}
+
+.right {
+    width: 850px;
+    height: 750px;
+}
+
+.layer {
+    border-spacing: 10px;
+    float: left;
+    background-color: rgb(20, 100, 20);
+    text-indent: 0%;
+}
+
+.top-layer {
+    width: 1050px;
+    height: 45px;
+    background-color: rgb(163, 73, 164);
+    color: black;
+    font-family: Old English Text MT;
+    font-size: 2em;
+    text-align: left;
+    text-indent: 3%;
+}
+
+.left-top-layer {
+    width: 200px;
+    height: 200px;
+}
+
+.left-bottom-layer {
+    width: 200px;
+    height: 440px;
+}
+
+.player-layer {
+    width: 850px;
+    height: 160px;
+}
+
+.table-layer {
+    background-color: rgb(13, 150, 13);
+    width: 850px;
+    height: 160px;
+}
+
+.playable:hover {
+    border: solid white 2px;
+}
+
+.card {
+    position: absolute;
+    background: url("invisible.png") no-repeat;
+    background-size: cover;
+    border: #000000 solid 2px;
+    border-radius: 10px;
+    float: none;
+    display: table-cell;
+    width: 88px;
+    height: 135px;
+    vertical-align: top;
+    index-z: 1;
+    margin-left: 10px;
+}
+
+.invisible {
+    background-image: url("invisible.png");
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.deck-card {
+    border: #000000 solid 2px;
+    border-radius: 10px;
+    background-image: url("deck.png");
+    background-size: contain;
+    width: 140px;
+    height: 89px;
+    float: middle;
+    vertical-align: middle;
+    horizontal-align: center;
+    z-index: 1;
+    position: static;
+    margin: auto;
+    margin-top: -120px;
+}
+
+.trump-card {
+    border: #000000 solid 2px;
+    border-radius: 10px;
+    background-image: url("visible.png");
+    background-size: contain;
+    width: 89px;
+    height: 140px;
+    margin: 40px auto;
+    display: block;
+    vertical-align: middle;
+}
+
+.visible {
+    background-size: contain;
+}
+
+.button-cell {
+    display: table-cell;
+    float: right;
+    width: 89px;
+    height: 140px;
+    margin: 10px;
+}
+
+.button:hover {
+    border: solid white;
+}
+
+.button {
+    background: url("button.png") no-repeat;
+    width: 70px;
+    height: 50px;
+    margin: 85px 0px 0px 0px;
+    border: solid thin black;
+}
+
+.button-player2 {
+    margin: 2px 0px 80px 0px;
+}
+.new-game {
+    background-image: url("new-game.png");
+    margin:15px 0px 0px 30px;
+    border:solid thin black;
+}
+
+.player1-name {
+    position: absolute;
+    top: 28%;
+    left: 0%;
+    font: 1.2em Verdana;
+    color: white;
+    text-indent: 45px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.player2-name {
+    position: absolute;
+    bottom: 12%;
+    left: 0%;
+    font: 1.2em Verdana;
+    color: white;
+    text-indent: 110px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.cards-remaining {
+    position: absolute;
+    top: 72%;
+    left: 2.5%;
+    font: 1em Verdana;
+    color: white;
+    font-weight: bold;
+    text-align: justify;
+}
+
+
+/* Clubs */
+.C6 {
+    background-image: url("card-img/6C.png");
+}
+
+.C7 {
+    background-image: url("card-img/7C.png");
+}
+
+.C8 {
+    background-image: url("card-img/8C.png");
+}
+
+.C9 {
+    background-image: url("card-img/9C.png");
+}
+
+.C10 {
+    background-image: url("card-img/10C.png");
+}
+
+.CA {
+    background-image: url("card-img/AC.png");
+}
+
+.CJ {
+    background-image: url("card-img/JC.png");
+}
+
+.CQ {
+    background-image: url("card-img/QC.png");
+}
+
+.CK {
+    background-image: url("card-img/KC.png");
+}
+
+/* Spades */
+.S6 {
+    background-image: url("card-img/6S.png");
+}
+
+.S7 {
+    background-image: url("card-img/7S.png");
+}
+
+.S8 {
+    background-image: url("card-img/8S.png");
+}
+
+.S9 {
+    background-image: url("card-img/9S.png");
+}
+
+.S10 {
+    background-image: url("card-img/10S.png");
+}
+
+.SA {
+    background-image: url("card-img/AS.png");
+}
+
+.SJ {
+    background-image: url("card-img/JS.png");
+}
+
+.SQ {
+    background-image: url("card-img/QS.png");
+}
+
+.SK {
+    background-image: url("card-img/KS.png");
+}
+
+/* Diamonds */
+.D6 {
+    background-image: url("card-img/6D.png");
+}
+
+.D7 {
+    background-image: url("card-img/7D.png");
+}
+
+.D8 {
+    background-image: url("card-img/8D.png");
+}
+
+.D9 {
+    background-image: url("card-img/9D.png");
+}
+
+.D10 {
+    background-image: url("card-img/10D.png");
+}
+
+.DA {
+    background-image: url("card-img/AD.png");
+}
+
+.DJ {
+    background-image: url("card-img/JD.png");
+}
+
+.DQ {
+    background-image: url("card-img/QD.png");
+}
+
+.DK {
+    background-image: url("card-img/KD.png");
+}
+
+/* Hearts */
+.H6 {
+    background-image: url("card-img/6H.png");
+}
+
+.H7 {
+    background-image: url("card-img/7H.png");
+}
+
+.H8 {
+    background-image: url("card-img/8H.png");
+}
+
+.H9 {
+    background-image: url("card-img/9H.png");
+}
+
+.H10 {
+    background-image: url("card-img/10H.png");
+}
+
+.HA {
+    background-image: url("card-img/AH.png");
+}
+
+.HJ {
+    background-image: url("card-img/JH.png");
+}
+
+.HQ {
+    background-image: url("card-img/QH.png");
+}
+
+.HK {
+    background-image: url("card-img/KH.png");
+}
