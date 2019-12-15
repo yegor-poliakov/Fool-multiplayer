@@ -7,100 +7,97 @@
 <body>
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <table>
-    <tr class="top-row" style="border: 10px solid rgb(163, 73, 164);">
+    <tr class="top-row">
         <td>
             <p class="title-text">Game of Fool</p>
         </td>
         <td class="middle">
-            <p style="float:left;" class="text button" onclick='newGameMenu()'>NEW</br>GAME</p>
+            <p style="float:left;" class="text button-text" onclick='newGameMenu()'>NEW</br>GAME</p>
         </td>
         <td style="border-style: none solid; border-color: rgb(163, 73, 164);">
-            <p style="float:right;" class="text button">GAME</br>RULES</p>
+            <p style="float:right;" class="text button-text">GAME</br>RULES</p>
         </td>
     </tr>
 
     <tr>
-        <td class="left" style="vertical-align:top;">
+        <td style="vertical-align:top;">
             <div id='trump-card' class='card trump-card H8'></div>
             <div class='card deck-card'></div>
             <div class='text remaining-cards'>24 cards</div>
         </td>
-        <td class="middle">
+        <td>
             <div class="hand">
-                <div class="card S8 playable" style="margin-left:5%;z-index=6;"></div>
-                <div class="card H8 playable" style="margin-left:-5%;z-index=5;"></div>
-                <div class="card H8 playable" style="margin-left:-5%;z-index=4;"></div>
-                <div class="card H8 playable" style="margin-left:-5%;z-index=3;"></div>
-                <div class="card H8 playable" style="margin-left:-5%;z-index=2;"></div>
-                <div class="card C8 playable" style="margin-left:-5%;z-index=1;"></div>
+                <div class="card card-top S8 playable" style="margin-left:10%;"></div>
+                <div class="card card-top H8 playable" style="margin-left:-6%";></div>
+                <div class="card card-top H8 playable" style="margin-left:-6%";></div>
+                <div class="card card-top H8 playable" style="margin-left:-6%";></div>
+                <div class="card card-top H8 playable" style="margin-left:-6%";></div>
+                <div class="card card-top H8 playable" style="margin-left:-6%";></div>
             </div>
             <div id="player1-name" class="text name">Crow</div>
         </td>
-        <td class="right" style="vertical-align:top;">
+        <td style="vertical-align:top;">
             <p id="status" class="text" style="margin-inline-start:3%;margin-block-start:5%;">STATUS:<br>Mandril attacks badly</p>
-            <p style="margin-inline-start:5%;margin-block-start:5%;float:left;background-color:rgb(163, 73, 164);" class="text button" onclick='move()'>GIVE<br>UP</p>
+            <p style="margin-inline-start:5%;margin-block-start:5%;float:left;background-color:rgb(163, 73, 164);" class="text button-text" onclick='move()'>GIVE<br>UP</p>
         </td>
     </tr>
 
-    <tr class="horizontal-layer">
-        <td class="left">
+    <tr>
+        <td>
             <div class="hand small-hand">
-                <div class="card invisible" style="margin-left:5%;z-index=6;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=5;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=4;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=3;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=2;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=1;"></div>
+                <div class="card card-mid invisible" style="margin-left:5%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
             </div>
-            <div id="player6-name" class="text name" style="margin-top:7%">Salty</div>
+            <div id="player6-name" class="text name">Salty</div>
         </td>
         <td class="middle desk">
 
         </td>
         <td class="right">
             <div class="hand small-hand">
-                <div class="card invisible" style="margin-left:5%;z-index=6;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=5;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=4;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=3;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=2;"></div>
-                <div class="card invisible" style="margin-left:-14%;z-index=1;"></div>
+                <div class="card card-mid invisible" style="margin-left:5%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
+                <div class="card card-mid invisible" style="margin-left:-35%;"></div>
             </div>
-            <div id="player2-name" class="text name" style="margin-top:7%">Henkie</div>
+            <div id="player5-name" class="text name">Henkie</div>
         </td>
     </tr>
-    <tr class="bottom">
-        <td colspan='3' style="vertical-align:top;">
-            <div class="hand small-hand" style="width:26%;display:inline-block;margin-left:10%;">
+    <tr>
+        <td colspan='3' style="margin-left:10%">
+            <div class="hand small-hand" style="width:33%;display:inline-block;visibility:hidden;">
                 <div id="player3-name" class="text name">Mandril</div>
-                <div class="card card-mid invisible" style="margin-left:10%;z-index=6;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=5;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=4;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=3;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=2;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=1;"></div>
+                <div class="card card-bot invisible" style="margin-left:20%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+            </div>
+            <div class="hand small-hand" style="width:33%;display:inline-block;">
+                <div id="player2-name" class="text name">Keen</div>
+                <div class="card card-bot invisible" style="margin-left:20%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+            </div>
+            <div class="hand small-hand" style="width:33%;display:inline-block;">
+                <div id="player4-name" class="text name">Rojam</div>
+                <div class="card card-bot invisible" style="margin-left:20%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
+                <div class="card card-bot invisible" style="margin-left:-23%"></div>
                 </div>
-
-            <div class="hand small-hand" style="width:26%;display:inline-block;">
-                    <div id="player4-name" class="text name">Keen</div>
-                <div class="card card-mid invisible" style="margin-left:10%;z-index=6;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=5;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=4;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=3;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=2;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=1;"></div>
-                </div>
-
-            <div class="hand small-hand" style="width:26%;display:inline-block;margin-right:0%;">
-                    <div id="player5-name" class="text name">Rojam</div>
-                <div class="card card-mid invisible" style="margin-left:10%;z-index=6;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=5;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=4;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=3;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=2;"></div>
-                <div class="card card-mid invisible" style="margin-left:-30%;z-index=1;"></div>
-                </div>
-
     </tr>
 
 </table>

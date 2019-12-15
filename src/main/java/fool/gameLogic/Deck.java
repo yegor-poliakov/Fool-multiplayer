@@ -1,7 +1,6 @@
 package fool.gameLogic;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Deck {
     public ArrayList<Card> deckOfCards;
@@ -94,6 +93,7 @@ public class Deck {
             Player player = new Player();
             player.setPlayerName(name);
             player.setIsHuman(true);
+            player.setPlayerID();
             players[i] = player;
         }
 
@@ -365,10 +365,6 @@ public class Deck {
         firstPlayer.offence = !(firstPlayer.offence);
         secondPlayer.offence = !(secondPlayer.offence);
 
-    }
-
-    public void sortHand(Player player) {
-        Collections.sort(player.playerHand, new CardComparator());
     }
 
     public int pickDefenceCard(ArrayList<Card> hand, Card actionCard) {

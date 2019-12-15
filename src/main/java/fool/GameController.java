@@ -15,9 +15,20 @@ public class GameController {
 
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/deck", method = RequestMethod.GET)
-    public GameState create(@RequestParam(value = "numberOfPlayers", defaultValue = "1") int numberOfPlayers,
-                            @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards) throws Exception {
+    public GameState createNewGame(@RequestParam(value = "numberOfPlayers", defaultValue = "1") int numberOfPlayers,
+                                   @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards) throws Exception {
         Deck deck = new Deck(numberOfPlayers, numberOfCards);
+        UserGame deckForDB = deckConverter.deckToUserGame(Stage.Continue, deck);
+        deckForDB = gameRepository.save(deckForDB);
+        GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), Stage.Continue, deck);
+        return gameState;
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/deck", method = RequestMethod.POST)
+    public GameState joinGame(@RequestParam(value = "deckID") long deckID) throws Exception {
+        UserGame userGame = gameRepository.findById(deckID).get();
+
         UserGame deckForDB = deckConverter.deckToUserGame(Stage.Continue, deck);
         deckForDB = gameRepository.save(deckForDB);
         GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), Stage.Continue, deck);

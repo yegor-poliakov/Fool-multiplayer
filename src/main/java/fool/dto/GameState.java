@@ -6,30 +6,25 @@ import java.util.ArrayList;
 public class GameState {
     private final GameStage stage;
     private final long deckID;
-    private final int firstPlayerNumber;
-    private final int secondPlayerNumber;
-    private final boolean firstPlayerActive;
-    private final boolean secondPlayerActive;
-    private final boolean firstPlayerOffender;
-    private final boolean secondPlayerOffender;
-    private final String[] firstPlayerCards;
-    private final String[] secondPlayerCards;
+    private final long playerID;
+    private final PlayerDTO[] players;
+    private final int playerNumber;
+    private final String[] playerCards;
     private final String[] table;
     private final String trumpCard;
     private final int remainingCards;
     private final String trump;
 
-    public GameState(long deckID, GameStage gameStage, Deck deck){
+    public GameState(long deckID, int playerID, GameStage gameStage, Deck deck) throws Exception {
         this.stage = gameStage;
         this.deckID = deckID;
-        this.firstPlayerNumber = 0;
-        this.secondPlayerNumber = 1;
-        this.firstPlayerActive = deck.firstPlayer.isActivityStatus();
-        this.secondPlayerActive = deck.secondPlayer.isActivityStatus();
-        this.firstPlayerOffender = deck.firstPlayer.isOffence();
-        this.secondPlayerOffender = deck.secondPlayer.isOffence();
-        this.firstPlayerCards = handToString(deck.firstPlayer.getPlayerHand());
-        this.secondPlayerCards = handToString(deck.secondPlayer.getPlayerHand());
+        this.playerID = playerID;
+        this.players = new PlayerDTO[deck.players.length];
+        for(int i = 0; i < players.length; i++){
+           players[i] = new PlayerDTO(deck.players[i]);
+        }
+        this.playerNumber = findPlayer(playerID, deck.players);
+        this.playerCards = handToString(deck.players[playerNumber].getPlayerHand());
         if (deck.deckOfCards.size() > 0){
             this.trumpCard = cardToString(deck.deckOfCards.get(deck.deckOfCards.size() - 1));
         } else {
@@ -93,20 +88,13 @@ public class GameState {
         return stage;
     }
 
-    public int getFirstPlayerNumber() {
-        return firstPlayerNumber;
-    }
-
-    public int getSecondPlayerNumber() {
-        return secondPlayerNumber;
-    }
-
-    public String[] getFirstPlayerCards() {
-        return firstPlayerCards;
-    }
-
-    public String[] getSecondPlayerCards() {
-        return secondPlayerCards;
+    public int findPlayer(int playerID, Player[] players) throws Exception {
+        for (int i = 0; i < players.length; i++){
+            if (playerID == players[i].getPlayerID(players[i])){
+                return i;
+            }
+        }
+        throw new Exception("Player ID not found");
     }
 
     public String[] getTable() {
@@ -121,23 +109,15 @@ public class GameState {
         return remainingCards;
     }
 
-    public boolean isFirstPlayerActive() {
-        return firstPlayerActive;
-    }
-
-    public boolean isSecondPlayerActive() {
-        return secondPlayerActive;
-    }
-
-    public boolean isFirstPlayerOffender() {
-        return firstPlayerOffender;
-    }
-
-    public boolean isSecondPlayerOffender() {
-        return secondPlayerOffender;
-    }
-
     public String getTrump() {
         return trump;
+    }
+
+    public long getPlayerID() {
+        return playerID;
+    }
+
+    public String[] getPlayerCards() {
+        return playerCards;
     }
 }

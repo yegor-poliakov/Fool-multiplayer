@@ -1,9 +1,11 @@
 package fool.gameLogic;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Player {
     ArrayList<Card> playerHand;
+    private int playerID;
     private String playerName;
     private boolean isHuman;
     private boolean activityStatus;
@@ -15,6 +17,7 @@ public class Player {
         this.offenceStatus = false;
         playerName = "NPC";
         this.isHuman = false;
+        this.playerID = 0;
     }
 
     public ArrayList<Card> getPlayerHand() {
@@ -55,5 +58,14 @@ public class Player {
 
     public void setOffenceStatus(boolean offence) {
         this.offenceStatus = offence;
+    }
+
+    public void setPlayerID(){
+        Random random = new Random();
+        playerID = ((random.nextInt() * 10000) % 1000);
+    }
+
+    public int getPlayerID(Player player){
+        return player.playerID;
     }
 }
