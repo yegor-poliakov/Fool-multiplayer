@@ -8,18 +8,26 @@ public class Deck {
     public ArrayList<Card> table = new ArrayList<Card>();
     public Player[] players;
     public String trump;
-    public String statusString;
+    public String statusString = "Waiting for players to join";
+
+    public void setStatusString(String status) {
+        this.statusString = status;
+    }
 
     /* set the initial state of the game, initialize AI attack in case the first player is AI */
-    public Deck(int numberOfPlayers, int numberOfCards) throws Exception {
+    public Deck(int numberOfPlayers, int numberOfCards, String playerName) throws Exception {
         talon = createDeck(numberOfCards);
         trump = trumpToString(talon.get(numberOfCards - 1).getSuit());
         players = createPlayers(numberOfPlayers);
         distributeCards();
-        readyPlayerOne();
         players[0].setPlayerID();
-        if (!players[findActiveOffender()].isHuman()) {
+        players[0].setPlayerName(playerName);
+        readyPlayerOne();
+        if (!players[findActiveAttacker()].isHuman()) {
             aiAttack();
+        }
+        if (numberOfPlayers == 1) {
+            statusUpdate();
         }
     }
 
@@ -31,7 +39,7 @@ public class Deck {
         }
 
         for (int i = 0; i < numberOfCards; i++) {
-            Card card = new Card(0, Suit.Spades);
+            Card card = new Card();
             switch (i % 4) {
                 case 0:
                     card.setRank(i / 4);
@@ -81,7 +89,7 @@ public class Deck {
         }
     }
 
-    /* create players with empty hands, if player wants to play against AI, include AI*/
+    /* create players with empty hands, if player wants to play alone, include AI */
     public static Player[] createPlayers(int numberOfPlayers) {
         int numberOfAis = 0;
         if (numberOfPlayers == 1) {
@@ -91,10 +99,9 @@ public class Deck {
         Player[] players = new Player[numberOfPlayers + numberOfAis];
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            String name = players[i].getPlayerName()+ i;
+            String name = players[i].getPlayerName() + i;
             Player player = new Player();
             player.setPlayerName(name);
-            player.setIsHuman(true);
             players[i] = player;
         }
 
@@ -129,7 +136,7 @@ public class Deck {
         int playerPlainIndex = 0;
 
         for (int i = 0; i < players.length; i++) {
-            for (int j = 0; j < players[i].getPlayerHand().size(); j++) {
+            for (int j = 0; j < 6; j++) {
                 Card card = players[i].getPlayerHand().get(j);
                 if (card.isTrump() && card.getRank() < lowestRankTrump) {
                     lowestRankTrump = card.getRank();
@@ -145,26 +152,24 @@ public class Deck {
         if (lowestRankTrump >= 0) {
             players[playerTrumpIndex].setActivityStatus(true);
             players[(playerTrumpIndex + 1) % players.length].setOffenceStatus(false);
-            statusUpdate();
         } else if (highestRankPlain >= 0) {
             players[playerPlainIndex].setActivityStatus(true);
             players[(playerPlainIndex + 1) % players.length].setOffenceStatus(false);
-            statusUpdate();
         } else {
             throw new Exception("Unable to figure out the first player");
         }
     }
 
-    /* pick a move involving cards */
+    /* pick a card move */
     public Stage move(int playerNumber, int cardNumber) throws Exception {
         if (players[playerNumber].isOffenceStatus()) {
-            return attack(players[playerNumber], cardNumber);
+            return attack(playerNumber, cardNumber);
         } else {
-            return defend(players[playerNumber], cardNumber);
+            return defend(playerNumber, cardNumber);
         }
     }
 
-    /* pick a move with only change of statuses involved */
+    /* pick a status change move */
     public Stage move(int playerNumber) throws Exception {
         if (players[playerNumber].isOffenceStatus()) {
             return pass(playerNumber);
@@ -174,28 +179,28 @@ public class Deck {
     }
 
     /* attack if feasible */
-    public Stage attack(Player player, int cardNumber) throws Exception {
+    public Stage attack(int playerNumber, int cardNumber) throws Exception {
         boolean attackSuccess = false;
         if (table.size() == 0) {
             attackSuccess = true;
         } else {
             for (int i = 0; i < table.size(); i++) {
-                if (player.getPlayerHand().get(cardNumber).getRank() == table.get(i).getRank()) {
+                if (players[playerNumber].getPlayerHand().get(cardNumber).getRank() == table.get(i).getRank()) {
                     attackSuccess = true;
                     break;
                 }
             }
         }
 
-        if (attackSuccess){
-            table.add(player.removePlayerCard(cardNumber));
-            player.setActivityStatus(false);
+        if (attackSuccess) {
+            table.add(players[playerNumber].removePlayerCard(cardNumber));
+            players[playerNumber].setActivityStatus(false);
             players[findDefender()].setActivityStatus(true);
             statusUpdate();
-            if (endGame() == Stage.End){
+            if (endGame() == Stage.End) {
                 return Stage.End;
             }
-            if(!players[findDefender()].isHuman()){
+            if (!players[findDefender()].isHuman()) {
                 aiDefence();
             }
         }
@@ -204,10 +209,10 @@ public class Deck {
     }
 
     /* defend if feasible */
-    public Stage defend(Player player, int cardNumber) throws Exception {
+    public Stage defend(int playerNumber, int cardNumber) throws Exception {
         boolean defenceSuccess = false;
         Card cardAttacking = table.get(table.size() - 1);
-        Card cardDefending = player.getPlayerHand().get(cardNumber);
+        Card cardDefending = players[playerNumber].getPlayerHand().get(cardNumber);
         if ((cardAttacking.getSuit() == cardDefending.getSuit()
                 && cardAttacking.getRank() < cardDefending.getRank()) ||
                 (cardAttacking.getSuit() != cardDefending.getSuit() && cardDefending.isTrump())) {
@@ -215,8 +220,8 @@ public class Deck {
         }
 
         if (defenceSuccess) {
-            table.add(player.removePlayerCard(cardNumber));
-            if (table.size() == 12 || player.getPlayerHand().size() == 0){
+            table.add(players[playerNumber].removePlayerCard(cardNumber));
+            if (table.size() == 12 || players[playerNumber].getPlayerHand().size() == 0) {
                 nextRound();
             } else {
                 nextTurn();
@@ -226,38 +231,16 @@ public class Deck {
         return Stage.Continue;
     }
 
-    /* activate the attacker */
-    public void nextTurn() throws Exception {
-        int primaryOffender = (players.length - 1 - findDefender()) % players.length;
-        int fullTurn = primaryOffender + players.length - 1;
-        for (int i = primaryOffender; i < fullTurn; i++) {
-            if (i != findDefender() && i != (findDefender() + players.length)
-                    && players[i % players.length].getPlayerHand().size() != 0
-                    && pickAttackCard(players[i % players.length].getPlayerHand()) != -1) {
-                deactivateOffender();
-                players[i % players.length].setActivityStatus(true);
-                statusUpdate();
-                if(!players[findActiveOffender()].isHuman()){
-                    aiAttack();
-                }
-                return;
-            }
-        }
-        nextRound();
-    }
-
-
-    /* switch to the next offender or end the round*/
+    /* switch to the next attacker or end the round if no one wants or is able to attack */
     public Stage pass(int playerNumber) throws Exception {
-        int checkRange = ((findActiveOffender() + players.length - playerNumber) % 4);
-        for (int i = playerNumber + 1; i < playerNumber + checkRange; i++){
+        int checkRange = ((findActiveAttacker() + players.length - playerNumber) % 4);
+        for (int i = playerNumber + 1; i < playerNumber + checkRange; i++) {
             if (i != findDefender() && i != (findDefender() + players.length)
-                    && players[i % players.length].getPlayerHand().size() != 0
                     && pickAttackCard(players[i % players.length].getPlayerHand()) != -1) {
-                deactivateOffender();
+                players[findActiveAttacker()].setActivityStatus(false);
                 players[i % players.length].setActivityStatus(true);
                 statusUpdate();
-                if(!players[findActiveOffender()].isHuman()){
+                if (!players[findActiveAttacker()].isHuman()) {
                     aiAttack();
                 }
                 return Stage.Continue;
@@ -267,22 +250,9 @@ public class Deck {
         return Stage.Continue;
     }
 
-
-    /* clear the table, replenish hands, switch to the next primary attacker */
-    public void nextRound() throws Exception {
-        table.clear();
-        replenish();
-        activateNextOffender();
-        statusUpdate();
-        if(!players[findActiveOffender()].isHuman()){
-            aiAttack();
-        }
-    }
-
-
     /* move all cards from the table to defender's hand and switch to the next offender */
     public Stage takeAll(int playerNumber) throws Exception {
-        for(int i = 0; i < table.size(); i++){
+        for (int i = 0; i < table.size(); i++) {
             players[playerNumber].givePlayerCard(table.get(i));
         }
         activateNextOffender();
@@ -290,15 +260,45 @@ public class Deck {
         return Stage.Continue;
     }
 
-    /* produce a response if AI has to defend */
+    /* continue round with the next attack */
+    public void nextTurn() throws Exception {
+        int primaryOffender = (players.length - 1 - findDefender()) % players.length;
+        int fullTurn = primaryOffender + players.length - 1;
+        for (int i = primaryOffender; i < fullTurn; i++) {
+            if (i != findDefender() && i != (findDefender() + players.length)
+                    && pickAttackCard(players[i % players.length].getPlayerHand()) != -1) {
+                players[findActiveAttacker()].setActivityStatus(false);
+                players[i % players.length].setActivityStatus(true);
+                statusUpdate();
+                if (!players[findActiveAttacker()].isHuman()) {
+                    aiAttack();
+                }
+                return;
+            }
+        }
+        nextRound();
+    }
+
+    /* clear the table, replenish hands, switch to the next primary attacker */
+    public void nextRound() throws Exception {
+        table.clear();
+        replenish();
+        activateNextOffender();
+        statusUpdate();
+        if (!players[findActiveAttacker()].isHuman()) {
+            aiAttack();
+        }
+    }
+
+    /* produce AI defence move */
     public Stage aiDefence() throws Exception {
         boolean effectiveDefence = false;
         delay();
-        Card attackingCard = table.get(table.size()-1);
+        Card attackingCard = table.get(table.size() - 1);
         if (pickDefenceCard(players[findDefender()].getPlayerHand(), attackingCard) != -1) {
             effectiveDefence = true;
             int defCardIndex = pickDefenceCard(players[findDefender()].getPlayerHand(), attackingCard);
-            defend(players[findDefender()], defCardIndex);
+            defend(findDefender(), defCardIndex);
         }
 
         if (!effectiveDefence) {
@@ -312,14 +312,14 @@ public class Deck {
     public Stage aiAttack() throws Exception {
         boolean effectiveAttack = false;
         delay();
-        if (pickAttackCard(players[findActiveOffender()].getPlayerHand()) != -1) {
+        if (pickAttackCard(players[findActiveAttacker()].getPlayerHand()) != -1) {
             effectiveAttack = true;
             int attCardIndex = pickAttackCard(players[findDefender()].getPlayerHand());
-            attack(players[findActiveOffender()], attCardIndex);
+            attack(findActiveAttacker(), attCardIndex);
         }
 
         if (!effectiveAttack) {
-            pass(findActiveOffender());
+            pass(findActiveAttacker());
         }
 
         return Stage.Continue;
@@ -329,7 +329,7 @@ public class Deck {
     public void replenish() throws Exception {
         int playerNumber = (players.length - 1 - findDefender()) % players.length;
         for (int i = playerNumber; i < players.length - 1; i++) {
-            if (i != findDefender()) {
+            if (i != findDefender() && i != findDefender() + players.length) {
                 int cardsToReplenish = 6 - players[i].getPlayerHand().size();
                 for (int j = 0; j <= cardsToReplenish; j++) {
                     if (talon.size() != 0) {
@@ -342,7 +342,7 @@ public class Deck {
         }
 
         int cardsToReplenish = 6 - players[findDefender()].getPlayerHand().size();
-        for (int j = 0; j <= cardsToReplenish; j++) {
+        for (int j = 0; j < cardsToReplenish; j++) {
             if (talon.size() != 0) {
                 players[findDefender()].getPlayerHand().add(talon.remove(0));
             } else {
@@ -358,13 +358,8 @@ public class Deck {
         players[currentDefender].setActivityStatus(true);
     }
 
-    /* switch the offender for the current attack */
-    public void deactivateOffender() throws Exception {
-        players[findActiveOffender()].setOffenceStatus(false);
-        players[findActiveOffender()].setActivityStatus(false);
-    }
-
-    /* pick the lowest card for AI defence */
+    /* pick the lowest card from a hand to beat a given card (for AI defend move)
+       returns -1 if no card present, returns the card index if found */
     public int pickDefenceCard(ArrayList<Card> hand, Card actionCard) {
         int lowestDefenceCard = -1;
         CardComparator cardComparator = new CardComparator();
@@ -388,7 +383,8 @@ public class Deck {
         return lowestDefenceCard;
     }
 
-    /* pick the lowest card for AI attack */
+    /* pick the lowest card from a hand to attack to check if attack move is possible for a player
+       returns -1 if no attack possible, returns the card index if there is at least one attack card */
     public int pickAttackCard(ArrayList<Card> hand) {
         int lowestAttackCard = -1;
         CardComparator cardComparator = new CardComparator();
@@ -426,7 +422,7 @@ public class Deck {
         return lowestAttackCard;
     }
 
-    /* find the index of a defending player */
+    /* find index of a defending player */
     public int findDefender() throws Exception {
         for (int i = 0; i < players.length; i++) {
             if (!players[i].isOffenceStatus()) {
@@ -436,26 +432,23 @@ public class Deck {
         throw new Exception("Missing defender");
     }
 
-    /* find the index of an attacking player */
-    public int findActiveOffender() throws Exception {
+    /* find index of an attacking player */
+    public int findActiveAttacker() throws Exception {
         for (int i = 0; i < players.length; i++) {
             if (players[i].isOffenceStatus() && players[i].isActivityStatus()) {
                 return i;
             }
         }
-        throw new Exception("Missing active offender");
+        throw new Exception("Missing active attacker");
     }
 
     /* check if the game continues */
     public Stage endGame() {
         if (talon.size() == 0) {
             int j = players.length;
-            int fool;
             for (int i = 0; i < players.length; i++) {
                 if (players[i].getPlayerHand().size() == 0) {
                     j -= 1;
-                } else {
-                    fool = i;
                 }
             }
             if (j <= 1) {
@@ -465,11 +458,13 @@ public class Deck {
         return Stage.Continue;
     }
 
-    public void statusUpdate() {
-        for (int i = 0; i < players.length; i++){
-            if (players[i].isActivityStatus()){
-                if (players[i].isOffenceStatus()){
-                    statusString = players[i].getPlayerName() + "attacks";
+    /* update status string to be displayed */
+    public void statusUpdate() throws Exception {
+        for (int i = 0; i < players.length; i++) {
+            if (players[i].isActivityStatus()) {
+                if (players[i].isOffenceStatus()) {
+                    statusString = players[i].getPlayerName() + "attacks"
+                            + players[findDefender()].getPlayerName();
                 } else {
                     statusString = players[i].getPlayerName() + "defends";
                 }
@@ -477,7 +472,9 @@ public class Deck {
         }
     }
 
+    /* delay for AI moves*/
     public void delay() throws InterruptedException {
         Thread.sleep(2000);
     }
+
 }

@@ -16,9 +16,10 @@ public class GameController {
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/deck", method = RequestMethod.GET)
     public GameState createNewGame(@RequestParam(value = "numberOfPlayers", defaultValue = "1") int numberOfPlayers,
-                                   @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards)
+                                   @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards,
+                                   @RequestParam(value = "playerName", defaultValue = "player1") String playerName)
                                    throws Exception {
-        Deck deck = new Deck(numberOfPlayers, numberOfCards);
+        Deck deck = new Deck(numberOfPlayers, numberOfCards, playerName);
         Stage stage = Stage.OnHold;
         if (numberOfPlayers == 1){
              stage = Stage.Continue;

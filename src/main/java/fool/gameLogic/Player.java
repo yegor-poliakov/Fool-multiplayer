@@ -12,12 +12,12 @@ public class Player {
     private boolean offenceStatus;
 
     public Player() {
-        this.activityStatus = false;
-        this.playerHand = new ArrayList<>(6);
-        this.offenceStatus = true;
-        this.playerName = "player";
-        this.isHuman = false;
         this.playerID = 0;
+        this.playerName = "player";
+        this.playerHand = new ArrayList<>();
+        this.isHuman = true;
+        this.activityStatus = false;
+        this.offenceStatus = true;
     }
 
     public int getPlayerID() {
@@ -26,7 +26,7 @@ public class Player {
 
     public void setPlayerID() {
         Random random = new Random();
-        playerID = ((random.nextInt() * 10000) % 1000);
+        this.playerID = (random.nextInt() * 100);
     }
 
     public String getPlayerName() {
@@ -45,13 +45,14 @@ public class Player {
         this.playerHand = playerHand;
     }
 
-    public Card removePlayerCard(int index){
-        return playerHand.remove(index);
+    public Card removePlayerCard(int index) {
+        return this.playerHand.remove(index);
     }
 
-    public void givePlayerCard(Card card){
-        playerHand.add(card);
+    public void givePlayerCard(Card card) {
+        this.playerHand.add(card);
     }
+
     public boolean isHuman() {
         return this.isHuman;
     }
