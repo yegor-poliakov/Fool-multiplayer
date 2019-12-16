@@ -16,11 +16,16 @@ public class GameController {
     @CrossOrigin(origins = "*")
     @RequestMapping(value = "/deck", method = RequestMethod.GET)
     public GameState createNewGame(@RequestParam(value = "numberOfPlayers", defaultValue = "1") int numberOfPlayers,
-                                   @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards) throws Exception {
+                                   @RequestParam(value = "numberOfCards", defaultValue = "36") int numberOfCards)
+                                   throws Exception {
         Deck deck = new Deck(numberOfPlayers, numberOfCards);
-        UserGame deckForDB = deckConverter.deckToUserGame(Stage.Continue, deck);
+        Stage stage = Stage.OnHold;
+        if (numberOfPlayers == 1){
+             stage = Stage.Continue;
+        }
+        UserGame deckForDB = deckConverter.deckToUserGame(stage, deck);
         deckForDB = gameRepository.save(deckForDB);
-        GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), Stage.Continue, deck);
+        GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), stage, deck);
         return gameState;
     }
 
@@ -28,10 +33,37 @@ public class GameController {
     @RequestMapping(value = "/deck", method = RequestMethod.POST)
     public GameState joinGame(@RequestParam(value = "deckID") long deckID) throws Exception {
         UserGame userGame = gameRepository.findById(deckID).get();
+        Deck deck = deckConverter.userGameToDeck(userGame);
+        Stage stage = Stage.OnHold;
 
-        UserGame deckForDB = deckConverter.deckToUserGame(Stage.Continue, deck);
+        int j = 0;
+        for (int i = 0; i < deck.players.length; i++){
+          if ((deck.players[i].getPlayerID()) == 0){
+              deck.players[i].setPlayerID();
+              j = i;
+              break;
+          }
+        }
+        if (j == deck.players.length){
+            stage = Stage.Continue;
+        }
+
+        UserGame deckForDB = deckConverter.deckToUserGame(stage, deck);
         deckForDB = gameRepository.save(deckForDB);
-        GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), Stage.Continue, deck);
+        GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), stage, deck);
+        return gameState;
+    }
+
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/deck", method = RequestMethod.POST)
+    public GameState joinGameByID(@RequestParam(value = "deckID") long deckID,
+                                  @RequestParam(value = "playerID") int playerID) throws Exception {
+        UserGame userGame = gameRepository.findById(deckID).get();
+        Deck deck = deckConverter.userGameToDeck(userGame);
+        Stage stage = userGame.getStage();
+        UserGame deckForDB = deckConverter.deckToUserGame(stage, deck);
+        deckForDB = gameRepository.save(deckForDB);
+        GameState gameState = deckConverter.deckToGameState(deckForDB.getId(), stage, deck);
         return gameState;
     }
 

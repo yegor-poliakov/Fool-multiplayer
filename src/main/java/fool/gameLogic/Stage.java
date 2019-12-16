@@ -1,8 +1,7 @@
 package fool.gameLogic;
 
 public enum Stage {
+    OnHold,
     Continue,
-    Victory,
-    Loss,
-    Draw
+    End
 }

@@ -1,10 +1,10 @@
 package fool.gameLogic;
 
 public class Card {
-    public Suit suit;
-    public int rank;
-    public boolean isTrump;
-    public boolean inPlay;
+    private Suit suit;
+    private int rank;
+    private boolean isTrump;
+    private boolean inPlay;
 
     public Card(){
 

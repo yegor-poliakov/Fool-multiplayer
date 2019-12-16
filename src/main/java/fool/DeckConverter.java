@@ -17,7 +17,7 @@ public class DeckConverter {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            String jsonMap = objectMapper.writeValueAsString(deck.deckOfCards);
+            String jsonMap = objectMapper.writeValueAsString(deck.talon);
             userGame.setDeckOfCards(jsonMap);
         } catch (Exception e) {
             return null;
@@ -58,7 +58,7 @@ public class DeckConverter {
         Deck deck = new Deck();
         ObjectMapper objectMapper = new ObjectMapper();
         CollectionType deckOfCardsType = objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, Card.class);
-        deck.deckOfCards = objectMapper.readValue(userGame.getDeckOfCards(), deckOfCardsType);
+        deck.talon = objectMapper.readValue(userGame.getDeckOfCards(), deckOfCardsType);
         deck.table = objectMapper.readValue(userGame.getTable(), deckOfCardsType);
         deck.firstPlayer = objectMapper.readValue(userGame.getFirstPlayer(), Player.class);
         deck.secondPlayer = objectMapper.readValue(userGame.getSecondPlayer(), Player.class);

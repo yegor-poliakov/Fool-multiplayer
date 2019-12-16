@@ -5,6 +5,11 @@ body {
     background-color: rgb(200, 200, 200);
 }
 
+a:link, a:visited, a:hover, a:active {
+  text-decoration: underline;
+  color: white;
+}
+
 table {
     width: 100%;
     height: 100%;

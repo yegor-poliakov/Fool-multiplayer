@@ -1,20 +1,26 @@
 package fool.gameLogic;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Deck {
-    public ArrayList<Card> deckOfCards;
+    public ArrayList<Card> talon;
     public ArrayList<Card> table = new ArrayList<Card>();
     public Player[] players;
     public String trump;
+    public String statusString;
 
-    /* set the initial state of the game */
+    /* set the initial state of the game, initialize AI attack in case the first player is AI */
     public Deck(int numberOfPlayers, int numberOfCards) throws Exception {
-        deckOfCards = createDeck(numberOfCards);
-        trump = trumpToString(deckOfCards.get(numberOfCards - 1).suit);
+        talon = createDeck(numberOfCards);
+        trump = trumpToString(talon.get(numberOfCards - 1).getSuit());
         players = createPlayers(numberOfPlayers);
         distributeCards();
-        readyPlayerOne(players);
+        readyPlayerOne();
+        players[0].setPlayerID();
+        if (!players[findActiveOffender()].isHuman()) {
+            aiAttack();
+        }
     }
 
     /* create a deck of cards, shuffle it, update trump cards*/
@@ -25,43 +31,43 @@ public class Deck {
         }
 
         for (int i = 0; i < numberOfCards; i++) {
-            Card card = new Card(-1, Suit.Spades);
+            Card card = new Card(0, Suit.Spades);
             switch (i % 4) {
                 case 0:
-                    card.rank = i / 4;
-                    card.suit = Suit.Spades;
+                    card.setRank(i / 4);
+                    card.setSuit(Suit.Spades);
                     deckOfCards.add(card);
                     break;
                 case 1:
-                    card.rank = i / 4;
-                    card.suit = Suit.Diamonds;
+                    card.setRank(i / 4);
+                    card.setSuit(Suit.Diamonds);
                     deckOfCards.add(card);
                     break;
                 case 2:
-                    card.rank = i / 4;
-                    card.suit = Suit.Hearts;
+                    card.setRank(i / 4);
+                    card.setSuit(Suit.Hearts);
                     deckOfCards.add(card);
                     break;
                 case 3:
-                    card.rank = i / 4;
-                    card.suit = Suit.Clubs;
+                    card.setRank(i / 4);
+                    card.setSuit(Suit.Clubs);
                     deckOfCards.add(card);
                     break;
             }
         }
         Collections.shuffle(deckOfCards);
 
-        /* make trump cards' status "trump"*/
+        /* assign trump status to trump cards */
         for (Card card : deckOfCards) {
-            if (deckOfCards.get(numberOfCards - 1).suit == card.suit) {
-                card.isTrump = true;
+            if (deckOfCards.get(numberOfCards - 1).getSuit() == card.getSuit()) {
+                card.setTrump(true);
             }
         }
 
         return deckOfCards;
     }
 
-    /* set the trump String to display if there is no trump card in place */
+    /* give the trump String to display when there is no trump card to display */
     public static String trumpToString(Suit suit) {
         switch (suit) {
             case Spades:
@@ -75,12 +81,8 @@ public class Deck {
         }
     }
 
-    /* create players with empty hands, include AI if there is only one player*/
-    public static Player[] createPlayers(int numberOfPlayers) throws Exception {
-        if (numberOfPlayers < 1) {
-            throw new Exception("Number of players is less than 1");
-        }
-
+    /* create players with empty hands, if player wants to play against AI, include AI*/
+    public static Player[] createPlayers(int numberOfPlayers) {
         int numberOfAis = 0;
         if (numberOfPlayers == 1) {
             numberOfAis = 1;
@@ -89,11 +91,10 @@ public class Deck {
         Player[] players = new Player[numberOfPlayers + numberOfAis];
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            String name = "player" + i;
+            String name = players[i].getPlayerName()+ i;
             Player player = new Player();
             player.setPlayerName(name);
             player.setIsHuman(true);
-            player.setPlayerID();
             players[i] = player;
         }
 
@@ -101,272 +102,269 @@ public class Deck {
             Player player = new Player();
             player.setIsHuman(false);
             players[numberOfPlayers] = player;
+            player.setPlayerName("Skynet");
         }
 
         return players;
     }
 
-    /* distribute cards from deck between players */
+    /* distribute cards from deck to players */
     public void distributeCards() {
         ArrayList<Card> hand = new ArrayList<>();
         for (int i = 0; i < players.length; i++) {
             hand.clear();
             for (int j = 0; j < 6; j++) {
-                Card card = deckOfCards.remove(0);
+                Card card = talon.remove(0);
                 hand.add(card);
             }
             players[i].setPlayerHand(hand);
         }
     }
 
-    /* compare all player hands to find the lowest trump or the highest regular card*/
-    public void readyPlayerOne(Player[] players) throws Exception {
+    /* compare all player hands to find the lowest trump or the highest plain card */
+    public void readyPlayerOne() throws Exception {
         int lowestRankTrump = -1;
-        int highestRankRegular = -1;
+        int highestRankPlain = -1;
         int playerTrumpIndex = 0;
-        int playerRegularIndex = 0;
+        int playerPlainIndex = 0;
 
         for (int i = 0; i < players.length; i++) {
             for (int j = 0; j < players[i].getPlayerHand().size(); j++) {
                 Card card = players[i].getPlayerHand().get(j);
-                if (card.isTrump && card.getRank() < lowestRankTrump) {
+                if (card.isTrump() && card.getRank() < lowestRankTrump) {
                     lowestRankTrump = card.getRank();
                     playerTrumpIndex = i;
                 }
-                if (!card.isTrump && card.getRank() > highestRankRegular) {
-                    highestRankRegular = card.getRank();
-                    playerRegularIndex = i;
+                if (!card.isTrump() && card.getRank() > highestRankPlain) {
+                    highestRankPlain = card.getRank();
+                    playerPlainIndex = i;
                 }
             }
         }
 
         if (lowestRankTrump >= 0) {
             players[playerTrumpIndex].setActivityStatus(true);
-            players[playerTrumpIndex].setOffenceStatus(true);
-        } else if (highestRankRegular >= 0) {
-            players[playerRegularIndex].setActivityStatus(true);
-            players[playerRegularIndex].setOffenceStatus(true);
+            players[(playerTrumpIndex + 1) % players.length].setOffenceStatus(false);
+            statusUpdate();
+        } else if (highestRankPlain >= 0) {
+            players[playerPlainIndex].setActivityStatus(true);
+            players[(playerPlainIndex + 1) % players.length].setOffenceStatus(false);
+            statusUpdate();
         } else {
             throw new Exception("Unable to figure out the first player");
         }
-
-        /* initialize AI attack in case the first player is AI */
-        if (!players[findActiveOffender(players)].isHuman()){
-            int iniCardIndex = pickAttackCard(players[findActiveOffender(players)].getPlayerHand());
-            attack(players[findActiveOffender(players)], players[findActiveOffender(players)].playerHand.get(iniCardIndex));
-            return;
-        }
     }
 
-    /* react to client input */
-    public Stage move(int playerNumber, int cardNumber) {
+    /* pick a move involving cards */
+    public Stage move(int playerNumber, int cardNumber) throws Exception {
         if (players[playerNumber].isOffenceStatus()) {
-            return attack(players[playerNumber], players[playerNumber].playerHand.get(cardNumber));
+            return attack(players[playerNumber], cardNumber);
         } else {
-            return defend(players[playerNumber], players[playerNumber].playerHand.get(cardNumber));
+            return defend(players[playerNumber], cardNumber);
         }
     }
 
-    public Stage move(int playerNumber) {
+    /* pick a move with only change of statuses involved */
+    public Stage move(int playerNumber) throws Exception {
         if (players[playerNumber].isOffenceStatus()) {
-            return retreat(players[playerNumber]);
+            return pass(playerNumber);
         } else {
-            return giveUp(players[playerNumber]);
+            return takeAll(playerNumber);
         }
     }
 
-    public Stage attack(Player player, Card card) {
-        boolean aiResponse = false;
+    /* attack if feasible */
+    public Stage attack(Player player, int cardNumber) throws Exception {
         boolean attackSuccess = false;
-        if () {
-            aiResponse = true;
-        }
-
-        ArrayList<Card> hand1 = firstPlayer.playerHand;
-        ArrayList<Card> hand2 = secondPlayer.playerHand;
-
-        if ((hand1.size() == 0) || (hand2.size() == 0)) {
-            return Stage.Continue;
+        if (table.size() == 0) {
+            attackSuccess = true;
         } else {
-            if (table.size() == 0) {
-                table.add(card);
-                player.playerHand.remove(card);
-                switchPlayers();
-                attackSuccess = true;
+            for (int i = 0; i < table.size(); i++) {
+                if (player.getPlayerHand().get(cardNumber).getRank() == table.get(i).getRank()) {
+                    attackSuccess = true;
+                    break;
+                }
+            }
+        }
+
+        if (attackSuccess){
+            table.add(player.removePlayerCard(cardNumber));
+            player.setActivityStatus(false);
+            players[findDefender()].setActivityStatus(true);
+            statusUpdate();
+            if (endGame() == Stage.End){
+                return Stage.End;
+            }
+            if(!players[findDefender()].isHuman()){
+                aiDefence();
+            }
+        }
+
+        return Stage.Continue;
+    }
+
+    /* defend if feasible */
+    public Stage defend(Player player, int cardNumber) throws Exception {
+        boolean defenceSuccess = false;
+        Card cardAttacking = table.get(table.size() - 1);
+        Card cardDefending = player.getPlayerHand().get(cardNumber);
+        if ((cardAttacking.getSuit() == cardDefending.getSuit()
+                && cardAttacking.getRank() < cardDefending.getRank()) ||
+                (cardAttacking.getSuit() != cardDefending.getSuit() && cardDefending.isTrump())) {
+            defenceSuccess = true;
+        }
+
+        if (defenceSuccess) {
+            table.add(player.removePlayerCard(cardNumber));
+            if (table.size() == 12 || player.getPlayerHand().size() == 0){
+                nextRound();
             } else {
-                if ((table.size() % 2 == 0)) {
-                    for (int i = 0; i < table.size(); i++) {
-                        if (card.rank == table.get(i).rank) {
-                            table.add(card);
-                            player.playerHand.remove(card);
-                            switchPlayers();
-                            attackSuccess = true;
-                            break;
-                        }
+                nextTurn();
+            }
+        }
+
+        return Stage.Continue;
+    }
+
+    /* activate the attacker */
+    public void nextTurn() throws Exception {
+        int primaryOffender = (players.length - 1 - findDefender()) % players.length;
+        int fullTurn = primaryOffender + players.length - 1;
+        for (int i = primaryOffender; i < fullTurn; i++) {
+            if (i != findDefender() && i != (findDefender() + players.length)
+                    && players[i % players.length].getPlayerHand().size() != 0
+                    && pickAttackCard(players[i % players.length].getPlayerHand()) != -1) {
+                deactivateOffender();
+                players[i % players.length].setActivityStatus(true);
+                statusUpdate();
+                if(!players[findActiveOffender()].isHuman()){
+                    aiAttack();
+                }
+                return;
+            }
+        }
+        nextRound();
+    }
+
+
+    /* switch to the next offender or end the round*/
+    public Stage pass(int playerNumber) throws Exception {
+        int checkRange = ((findActiveOffender() + players.length - playerNumber) % 4);
+        for (int i = playerNumber + 1; i < playerNumber + checkRange; i++){
+            if (i != findDefender() && i != (findDefender() + players.length)
+                    && players[i % players.length].getPlayerHand().size() != 0
+                    && pickAttackCard(players[i % players.length].getPlayerHand()) != -1) {
+                deactivateOffender();
+                players[i % players.length].setActivityStatus(true);
+                statusUpdate();
+                if(!players[findActiveOffender()].isHuman()){
+                    aiAttack();
+                }
+                return Stage.Continue;
+            }
+        }
+        nextRound();
+        return Stage.Continue;
+    }
+
+
+    /* clear the table, replenish hands, switch to the next primary attacker */
+    public void nextRound() throws Exception {
+        table.clear();
+        replenish();
+        activateNextOffender();
+        statusUpdate();
+        if(!players[findActiveOffender()].isHuman()){
+            aiAttack();
+        }
+    }
+
+
+    /* move all cards from the table to defender's hand and switch to the next offender */
+    public Stage takeAll(int playerNumber) throws Exception {
+        for(int i = 0; i < table.size(); i++){
+            players[playerNumber].givePlayerCard(table.get(i));
+        }
+        activateNextOffender();
+        nextRound();
+        return Stage.Continue;
+    }
+
+    /* produce a response if AI has to defend */
+    public Stage aiDefence() throws Exception {
+        boolean effectiveDefence = false;
+        delay();
+        Card attackingCard = table.get(table.size()-1);
+        if (pickDefenceCard(players[findDefender()].getPlayerHand(), attackingCard) != -1) {
+            effectiveDefence = true;
+            int defCardIndex = pickDefenceCard(players[findDefender()].getPlayerHand(), attackingCard);
+            defend(players[findDefender()], defCardIndex);
+        }
+
+        if (!effectiveDefence) {
+            takeAll(findDefender());
+        }
+
+        return Stage.Continue;
+    }
+
+    /* produce a response if AI has to attack */
+    public Stage aiAttack() throws Exception {
+        boolean effectiveAttack = false;
+        delay();
+        if (pickAttackCard(players[findActiveOffender()].getPlayerHand()) != -1) {
+            effectiveAttack = true;
+            int attCardIndex = pickAttackCard(players[findDefender()].getPlayerHand());
+            attack(players[findActiveOffender()], attCardIndex);
+        }
+
+        if (!effectiveAttack) {
+            pass(findActiveOffender());
+        }
+
+        return Stage.Continue;
+    }
+
+    /* add necessary cards to players' hands after the round if the deck is not empty */
+    public void replenish() throws Exception {
+        int playerNumber = (players.length - 1 - findDefender()) % players.length;
+        for (int i = playerNumber; i < players.length - 1; i++) {
+            if (i != findDefender()) {
+                int cardsToReplenish = 6 - players[i].getPlayerHand().size();
+                for (int j = 0; j <= cardsToReplenish; j++) {
+                    if (talon.size() != 0) {
+                        players[i].getPlayerHand().add(talon.remove(0));
+                    } else {
+                        break;
                     }
-                } else {
-                    return Stage.Continue;
                 }
             }
         }
 
-        if (aiResponse && attackSuccess) {
-            boolean effectiveDefence = false;
-            if (secondPlayer.playerHand.size() > 0) {
-                if (pickDefenceCard(secondPlayer.playerHand, card) != -1) {
-                    effectiveDefence = true;
-                    int defCardIndex = pickDefenceCard(secondPlayer.playerHand, card);
-                    defend(secondPlayer, secondPlayer.playerHand.get(defCardIndex));
-                }
-            }
-
-            if (!effectiveDefence) {
-                giveUp(secondPlayer);
-            }
-        }
-
-        return Stage.Continue;
-    }
-
-    public Stage defend(Player player, Card card) {
-        boolean aiResponse = false;
-        if (player == firstPlayer) {
-            aiResponse = true;
-        }
-
-        Card cardAttacking = new Card();
-        if (table.size() % 2 == 1) {
-            cardAttacking = table.get(table.size() - 1);
-        }
-
-        if ((cardAttacking.suit == card.suit && cardAttacking.rank < card.rank) ||
-                (cardAttacking.suit != card.suit && card.isTrump)) {
-            table.add(card);
-            player.playerHand.remove(card);
-            switchPlayers();
-        }
-
-        if (aiResponse) {
-            boolean effectiveAttack = false;
-            if (secondPlayer.playerHand.size() > 0) {
-                if (pickAttackCard(secondPlayer.playerHand) != -1) {
-                    effectiveAttack = true;
-                    int attCardIndex = pickAttackCard(secondPlayer.playerHand);
-                    attack(secondPlayer, secondPlayer.playerHand.get(attCardIndex));
-                }
-            }
-
-            if (!effectiveAttack) {
-                retreat(secondPlayer);
-            }
-        }
-
-        return Stage.Continue;
-    }
-
-    public Stage retreat(Player player) {
-        boolean aiResponse = false;
-        if (player == firstPlayer) {
-            aiResponse = true;
-        }
-
-        if (table.size() % 2 == 0) {
-            table.clear();
-            switchOffender();
-            switchPlayers();
-            replenish();
-        }
-
-        if (endGame() != Stage.Continue) {
-            return endGame();
-        }
-
-        if (aiResponse) {
-            if (secondPlayer.playerHand.size() > 0) {
-                int attCardIndex = pickAttackCard(secondPlayer.playerHand);
-                attack(secondPlayer, secondPlayer.playerHand.get(attCardIndex));
-            }
-        }
-
-        return endGame();
-    }
-
-    public Stage giveUp(Player player) {
-        boolean aiResponse = false;
-        if (player == firstPlayer) {
-            aiResponse = true;
-        }
-
-        if (table.size() % 2 == 1) {
-            player.playerHand.addAll(table);
-            table.clear();
-            switchPlayers();
-            replenish();
-        }
-
-        if (endGame() != Stage.Continue) {
-            return endGame();
-        }
-
-        if (aiResponse) {
-            if (secondPlayer.playerHand.size() > 0) {
-                int attCardIndex = pickAttackCard(secondPlayer.playerHand);
-                attack(secondPlayer, secondPlayer.playerHand.get(attCardIndex));
-            }
-        }
-
-        return endGame();
-    }
-
-    /* add necessary cards to player hands after the round if the deck is not empty
-        the parameter playerNumber has to be an index of either primary offender or defender
-    */
-    public Stage replenish(int playerNumber) {
-        if (!players[playerNumber].isOffenceStatus()) {
-            playerNumber = playerNumber % (playerNumber + players.length);
-        }
-
-        for (int i = playerNumber; i < deckOfCards.size() + playerNumber; i++) {
-            if (deckOfCards.size() != 0) {
-                if (players[i].getPlayerHand().size() < 6) {
-                    players[i % players.length].getPlayerHand().add(deckOfCards.remove(0));
-                }
+        int cardsToReplenish = 6 - players[findDefender()].getPlayerHand().size();
+        for (int j = 0; j <= cardsToReplenish; j++) {
+            if (talon.size() != 0) {
+                players[findDefender()].getPlayerHand().add(talon.remove(0));
             } else {
                 break;
             }
         }
-
-        return Stage.Continue;
     }
 
-    public void switchPlayers(int playerNumber) {
-        playerNumber = playerNumber % (playerNumber + players.length);
-        secondPlayer.activityStatus = !(secondPlayer.activityStatus);
+    public void activateNextOffender() throws Exception {
+        int currentDefender = findDefender();
+        players[(currentDefender + 1) % players.length].setOffenceStatus(false);
+        players[currentDefender].setOffenceStatus(true);
+        players[currentDefender].setActivityStatus(true);
     }
 
-    public Stage endGame() {
-        if (deckOfCards.size() == 0) {
-            if (firstPlayer.playerHand.size() == 0 && secondPlayer.playerHand.size() == 0) {
-                return Stage.Draw;
-            }
-
-            if (firstPlayer.playerHand.size() == 0 && secondPlayer.playerHand.size() > 0) {
-                return Stage.Victory;
-            }
-
-            if (firstPlayer.playerHand.size() > 0 && secondPlayer.playerHand.size() == 0) {
-                return Stage.Loss;
-            }
-        }
-        return Stage.Continue;
+    /* switch the offender for the current attack */
+    public void deactivateOffender() throws Exception {
+        players[findActiveOffender()].setOffenceStatus(false);
+        players[findActiveOffender()].setActivityStatus(false);
     }
 
-    public void switchOffender() {
-        firstPlayer.offence = !(firstPlayer.offence);
-        secondPlayer.offence = !(secondPlayer.offence);
-
-    }
-
+    /* pick the lowest card for AI defence */
     public int pickDefenceCard(ArrayList<Card> hand, Card actionCard) {
         int lowestDefenceCard = -1;
         CardComparator cardComparator = new CardComparator();
@@ -390,6 +388,7 @@ public class Deck {
         return lowestDefenceCard;
     }
 
+    /* pick the lowest card for AI attack */
     public int pickAttackCard(ArrayList<Card> hand) {
         int lowestAttackCard = -1;
         CardComparator cardComparator = new CardComparator();
@@ -404,7 +403,7 @@ public class Deck {
         } else {
             for (int i = 0; i < hand.size(); i++) {
                 for (int j = 0; j < table.size(); j++) {
-                    if (hand.get(i).rank == table.get(j).rank) {
+                    if (hand.get(i).getRank() == table.get(j).getRank()) {
                         lowestAttackCard = i;
                         break;
                     }
@@ -414,7 +413,7 @@ public class Deck {
             if (lowestAttackCard != -1) {
                 for (int i = 0; i < hand.size(); i++) {
                     for (int j = 0; j < table.size(); j++) {
-                        if (hand.get(i).rank == table.get(j).rank) {
+                        if (hand.get(i).getRank() == table.get(j).getRank()) {
                             if (cardComparator.compare(hand.get(i), hand.get(lowestAttackCard)) == -1) {
                                 lowestAttackCard = i;
                             }
@@ -427,7 +426,8 @@ public class Deck {
         return lowestAttackCard;
     }
 
-    public static int findDefender(Player[] players) throws Exception {
+    /* find the index of a defending player */
+    public int findDefender() throws Exception {
         for (int i = 0; i < players.length; i++) {
             if (!players[i].isOffenceStatus()) {
                 return i;
@@ -436,12 +436,48 @@ public class Deck {
         throw new Exception("Missing defender");
     }
 
-    public static int findActiveOffender(Player[] players) throws Exception {
+    /* find the index of an attacking player */
+    public int findActiveOffender() throws Exception {
         for (int i = 0; i < players.length; i++) {
             if (players[i].isOffenceStatus() && players[i].isActivityStatus()) {
                 return i;
             }
         }
         throw new Exception("Missing active offender");
+    }
+
+    /* check if the game continues */
+    public Stage endGame() {
+        if (talon.size() == 0) {
+            int j = players.length;
+            int fool;
+            for (int i = 0; i < players.length; i++) {
+                if (players[i].getPlayerHand().size() == 0) {
+                    j -= 1;
+                } else {
+                    fool = i;
+                }
+            }
+            if (j <= 1) {
+                return Stage.End;
+            }
+        }
+        return Stage.Continue;
+    }
+
+    public void statusUpdate() {
+        for (int i = 0; i < players.length; i++){
+            if (players[i].isActivityStatus()){
+                if (players[i].isOffenceStatus()){
+                    statusString = players[i].getPlayerName() + "attacks";
+                } else {
+                    statusString = players[i].getPlayerName() + "defends";
+                }
+            }
+        }
+    }
+
+    public void delay() throws InterruptedException {
+        Thread.sleep(2000);
     }
 }

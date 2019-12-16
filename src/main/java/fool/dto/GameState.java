@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class GameState {
     private final GameStage stage;
+    private final String statusText;
     private final long deckID;
     private final long playerID;
     private final PlayerDTO[] players;
@@ -17,6 +18,7 @@ public class GameState {
 
     public GameState(long deckID, int playerID, GameStage gameStage, Deck deck) throws Exception {
         this.stage = gameStage;
+        this.statusText = deck.statusString;
         this.deckID = deckID;
         this.playerID = playerID;
         this.players = new PlayerDTO[deck.players.length];
@@ -25,13 +27,13 @@ public class GameState {
         }
         this.playerNumber = findPlayer(playerID, deck.players);
         this.playerCards = handToString(deck.players[playerNumber].getPlayerHand());
-        if (deck.deckOfCards.size() > 0){
-            this.trumpCard = cardToString(deck.deckOfCards.get(deck.deckOfCards.size() - 1));
+        if (deck.talon.size() > 0){
+            this.trumpCard = cardToString(deck.talon.get(deck.talon.size() - 1));
         } else {
             this.trumpCard = null;
         }
         this.trump = deck.trump;
-        this.remainingCards = deck.deckOfCards.size();
+        this.remainingCards = deck.talon.size();
         this.table = handToString(deck.table);
     }
 
@@ -119,5 +121,9 @@ public class GameState {
 
     public String[] getPlayerCards() {
         return playerCards;
+    }
+
+    public String getStatusText() {
+        return statusText;
     }
 }
