@@ -1,0 +1,94 @@
+<html>
+<head>
+    <title>Fool</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+<table>
+    <tr class="top-row">
+        <td>
+            <p class="title-text">Game of Fool</p>
+        </td>
+
+        <td class="middle">
+            <p class="text button-text new-game-button" onclick='newGameMenu()'>NEW</br>GAME</p>
+        </td>
+
+        <td class="game-rules">
+            <p class="text"><a href="" class="button-text game-rules-button">GAME</br>RULES</a></p>
+        </td>
+    </tr>
+
+    <tr>
+        <td id="trump-data">
+
+        </td>
+
+        <td id="place-1">
+            <div class="hand">
+
+            </div>
+            <div class="text name">
+
+            </div>
+        </td>
+
+        <td id="status-data">
+            <p id="status" class="text">
+
+            </p>
+            <p id="action-button" class="text button-text" onclick='move()'>
+
+            </p>
+        </td>
+    </tr>
+
+    <tr>
+        <td id="place-6">
+            <div class="hand small-hand dummy">
+
+            </div>
+            <div class="text name dummy">
+
+            </div>
+        </td>
+        <td class="middle desk">
+
+        </td>
+
+        <td id="place-2" class="right">
+            <div class="hand small-hand dummy">
+
+            </div>
+            <div class="text name dummy">
+
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td colspan='3' id="bottom">
+            <div class="hand small-hand" id="place-5">
+                <div class="text name dummy">place-5</div>
+                <div class="card card-bot dummy"></div>
+            </div>
+
+            <div class="hand small-hand" id="place-4">
+                <div class="text name dummy">place-4</div>
+                <div class="card card-bot dummy"></div>
+            </div>
+
+            <div class="hand small-hand" id="place-3">
+                <div class="text name dummy">place-4</div>
+                <div class="card card-bot dummy"></div>
+            </div>
+    </tr>
+
+</table>
+
+<script type="application/javascript" src="app2.js"></script>
+
+</body>
+</html>

@@ -31,12 +31,63 @@ td {
     width: 20%;
 }
 
+#place-1 {
+
+}
+
+#place-2 {
+
+}
+
+#place-3 {
+    width: 33%;
+    display: inline-block;
+}
+
+#place-4 {
+    width: 33%;
+    display: inline-block;
+}
+
+#place-5 {
+    width: 33%;
+    display: inline-block;
+}
+
+#place-6 {
+
+}
+
+#trump-data {
+    vertical-align: top;
+}
+
+#status-data {
+    vertical-align: top;
+}
+
+#status {
+    margin-inline-start: 3%;
+    margin-block-start: 5%;
+}
+
+#action-button {
+    margin-inline-start: 5%;
+    margin-block-start: 5%;
+    float: left;
+    background-color: rgb(163, 73, 164);
+}
+
+#bottom {
+    margin-left: 10%;
+}
+
 .middle {
     width: 40%;
 }
 
 .dummy {
-    width: 20%;
+    visibility: hidden;
 }
 
 .desk {
@@ -60,6 +111,24 @@ td {
 
 .button-text:hover {
     border: solid 3px white;
+}
+
+.new-game-button {
+    float:left;
+}
+
+.game-rules {
+    border-style: none solid;
+    border-color: rgb(163, 73, 164);
+}
+
+.game-rules-button {
+    text-decoration: none;
+    float: right;
+}
+
+.game-rules-button:link {
+    text-decoration: none;
 }
 
 .title-text {
@@ -146,19 +215,29 @@ td {
     height: 65%;
 }
 
-
-.button-player2 {
-    margin: 2px 0px 80px 0px;
-}
-
 .new-game {
     background-image: url("new-game.png");
     margin:15px 0px 0px 30px;
     border:solid thin black;
 }
 
-
 /* Clubs */
+.C2 {
+    background-image: url("card-img/2C.png");
+}
+
+.C3 {
+    background-image: url("card-img/3C.png");
+}
+
+.C4 {
+    background-image: url("card-img/4C.png");
+}
+
+.C5 {
+    background-image: url("card-img/5C.png");
+}
+
 .C6 {
     background-image: url("card-img/6C.png");
 }
@@ -196,6 +275,22 @@ td {
 }
 
 /* Spades */
+.S2 {
+    background-image: url("card-img/2S.png");
+}
+
+.S3 {
+    background-image: url("card-img/3S.png");
+}
+
+.S4 {
+    background-image: url("card-img/4S.png");
+}
+
+.S5 {
+    background-image: url("card-img/5S.png");
+}
+
 .S6 {
     background-image: url("card-img/6S.png");
 }
@@ -233,6 +328,22 @@ td {
 }
 
 /* Diamonds */
+.D2 {
+    background-image: url("card-img/2D.png");
+}
+
+.D3 {
+    background-image: url("card-img/3D.png");
+}
+
+.D4 {
+    background-image: url("card-img/4D.png");
+}
+
+.D5 {
+    background-image: url("card-img/5D.png");
+}
+
 .D6 {
     background-image: url("card-img/6D.png");
 }
@@ -270,6 +381,22 @@ td {
 }
 
 /* Hearts */
+.H2 {
+    background-image: url("card-img/2H.png");
+}
+
+.H3 {
+    background-image: url("card-img/3H.png");
+}
+
+.H4 {
+    background-image: url("card-img/4H.png");
+}
+
+.H5 {
+    background-image: url("card-img/5H.png");
+}
+
 .H6 {
     background-image: url("card-img/6H.png");
 }

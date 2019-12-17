@@ -1,8 +1,7 @@
 package fool.dto;
 
 public enum GameStage {
-    Loss,
+    OnHold,
     Continue,
-    Victory,
-    Draw
+    End
 }

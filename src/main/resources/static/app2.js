@@ -1,21 +1,52 @@
 const baseURL = "http://localhost:8080/";
 /*const baseURL = "https://foolkyivbased.herokuapp.com/";*/
 var deckID = 0;
+var playerID = 0;
+var pveviousState = null;
 function render(gameState) {
-    deckID = gameState.deckID;
-    var cardsRemaining = gameState.remainingCards;
-    var cardCounter = $('#cards-remaining');
-    cardCounter.empty();
-    var trump = gameState.trump;
-    if(cardsRemaining != 0){
-        var remaining = "";
-        remaining += `<div class='cards-remaining'>Cards to go: ${cardsRemaining}</div>`;
-        cardCounter.append(remaining);
-    } else if (!(trump == undefined)) {
-        var remaining = "";
-        remaining += `<div class='cards-remaining'>Trump: ${trump}</div>`;
-        cardCounter.append(remaining);
+    if (previousState === gameState){
+        return;
     }
+    previousState = gameState;
+    deckID = gameState.deckID;
+    playerID = gameState.playerID;
+
+    var trumpData = $('#trump-data');
+    trumpData.empty();
+    var trumpCard = gameState.trumpCard;
+    var cardsRemaining = gameState.remainingCards;
+    var trump = gameState.trump;
+
+    var trumpShow = "";
+    var deckCard = "";
+    var remaining = "";
+    if (cardsRemaining > 0){
+        switch(cardsRemaining) {
+          case 1:
+            trumpShow += `<div id='trump-card' class='card trump-card ${trumpCard}'></div>`;
+            remaining += `<div id='cards-remaining' class='text remaining-cards'>${cardsRemaining}</div>`;
+            break;
+          default:
+            trumpShow += `<div id='trump-card' class='card trump-card ${trumpCard}'></div>`;
+            deckCard += `<div class='card deck-card'></div>`
+            remaining += `<div id='cards-remaining' class='text remaining-cards'>${cardsRemaining}</div>`;
+            break;
+        }
+    } else {
+        remaining += `<div id='cards-remaining' class='text remaining-cards'>Trump: ${trump}</div>`;
+    }
+    trumpData.append(trumpShow);
+    trumpData.append(deckCard);
+    trumpData.append(remaining);
+
+    var place-1 = $('#place-1');
+    place-1.empty();
+    var hand1 = "";
+    hand1 += `<div class="hand">`;
+
+    hand1 += `</div>`;
+
+
 
     var trumpLayer = $('#trump-layer');
     trumpLayer.empty();
@@ -138,10 +169,23 @@ function render(gameState) {
     return false;
 }
 
+
+setInterval(function(){ alert("Hello"); }, 3000);
+
 function newGame(){
 
     $.ajax({
         url: baseURL + "deck",
+        crossDomain: true,
+        type: "GET",
+        success: render
+    })
+}
+
+function getState(){
+
+    $.ajax({
+        url: baseURL + "getstate",
         crossDomain: true,
         type: "GET",
         success: render

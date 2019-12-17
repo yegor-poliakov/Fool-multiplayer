@@ -12,10 +12,10 @@
             <p class="title-text">Game of Fool</p>
         </td>
         <td class="middle">
-            <p style="float:left;" class="text button-text" onclick='newGameMenu()'>NEW</br>GAME</p>
+            <p class="text button-text new-game-button" onclick='newGameMenu()'>NEW</br>GAME</p>
         </td>
-        <td style="border-style: none solid; border-color: rgb(163, 73, 164);">
-            <p style="float:right;" class="text button-text">GAME</br>RULES</p>
+        <td class="game-rules">
+            <p class="text"><a href="/rules.html" class="button-text game-rules-button">GAME</br>RULES</a></p>
         </td>
     </tr>
 
@@ -23,7 +23,7 @@
         <td style="vertical-align:top;">
             <div id='trump-card' class='card trump-card H8'></div>
             <div class='card deck-card'></div>
-            <div class='text remaining-cards'>24 cards</div>
+            <div id='cards-remaining' class='text remaining-cards'>24 cards</div>
         </td>
         <td>
             <div class="hand">
@@ -102,7 +102,7 @@
 
 </table>
 
-<script type="application/javascript" src="app.js"></script>
+<script type="application/javascript" src="app2.js"></script>
 
 </body>
 </html>

@@ -4,6 +4,7 @@ import fool.gameLogic.*;
 
 public class MakeMoveRequest {
     private long deckID;
+    private int playerID;
     private int playerNumber;
     private int cardNumber;
 
@@ -13,6 +14,14 @@ public class MakeMoveRequest {
 
     public void setDeckID(long deckID) {
         this.deckID = deckID;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
     }
 
     public int getPlayerNumber() {
@@ -30,4 +39,5 @@ public class MakeMoveRequest {
     public void setCardNumber(int cardNumber) {
         this.cardNumber = cardNumber;
     }
+
 }

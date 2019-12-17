@@ -6,24 +6,29 @@ import java.io.Serializable;
 @Entity
 @Table(name = "usergame")
 public class UserGame implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private long deckID;
 
     @Column(name = "stage")
     private String stage;
 
     @Lob
-    @Column(name = "firstPlayer")
-    private String firstPlayer;
+    @Column(name = "talon")
+    private String talon;
 
     @Lob
-    @Column(name = "secondPlayer")
-    private String secondPlayer;
+    @Column(name = "players")
+    private String players;
 
     @Lob
-    @Column(name = "deckOfCards")
-    private String deckOfCards;
+    @Column(name = "statusString")
+    private String statusString;
+
+    @Lob
+    @Column(name = "deckSize")
+    private String deckSize;
 
     @Lob
     @Column(name = "\"table\"")
@@ -36,61 +41,68 @@ public class UserGame implements Serializable {
     public UserGame() {
     }
 
-    public long getId() {
-        return id;
+    public long getDeckID() {
+        return deckID;
     }
 
-
-    public String getStage() {
-        return stage;
+    public void setDeckID(long deckID) {
+        this.deckID = deckID;
     }
 
     public void setStage(String stage) {
         this.stage = stage;
     }
 
-    public String getTable() {
-        return table;
+    public String getStage() {
+        return stage;
+    }
+
+    public void setTalon(String talon) {
+        this.talon = talon;
+    }
+
+    public void setPlayers(String players) {
+        this.players = players;
+    }
+
+    public void setStatusString(String statusString) {
+        this.statusString = statusString;
+    }
+
+    public void setDeckSize(String deckSize) {
+        this.deckSize = deckSize;
     }
 
     public void setTable(String table) {
         this.table = table;
     }
 
-    public String getFirstPlayer() {
-        return firstPlayer;
-    }
-
-    public void setFirstPlayer(String firstPlayer) {
-        this.firstPlayer = firstPlayer;
-    }
-
-    public String getSecondPlayer() {
-        return secondPlayer;
-    }
-
-    public void setSecondPlayer(String secondPlayer) {
-        this.secondPlayer = secondPlayer;
-    }
-
-    public String getDeckOfCards() {
-        return deckOfCards;
-    }
-
-    public void setDeckOfCards(String deckOfCards) {
-        this.deckOfCards = deckOfCards;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     public void setTrump(String trump) {
         this.trump = trump;
     }
 
+    public String getTalon() {
+        return talon;
+    }
+
+    public String getTable() {
+        return table;
+    }
+
+    public String getPlayers() {
+        return players;
+    }
+
     public String getTrump() {
         return trump;
+    }
+
+    public String getStatusString() {
+        return statusString;
+    }
+
+    public String getDeckSize() {
+        return deckSize;
     }
 
 }

@@ -24,9 +24,8 @@ public class Player {
         return playerID;
     }
 
-    public void setPlayerID() {
-        Random random = new Random();
-        this.playerID = (random.nextInt() * 100);
+    public void setPlayerID(int playerID) {
+        this.playerID = playerID;
     }
 
     public String getPlayerName() {

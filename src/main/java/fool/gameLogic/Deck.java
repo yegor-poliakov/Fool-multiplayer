@@ -9,18 +9,19 @@ public class Deck {
     public Player[] players;
     public String trump;
     public String statusString = "Waiting for players to join";
+    public int deckSize;
 
-    public void setStatusString(String status) {
-        this.statusString = status;
+    public Deck() {
     }
 
     /* set the initial state of the game, initialize AI attack in case the first player is AI */
     public Deck(int numberOfPlayers, int numberOfCards, String playerName) throws Exception {
         talon = createDeck(numberOfCards);
+        deckSize = talon.size();
         trump = trumpToString(talon.get(numberOfCards - 1).getSuit());
         players = createPlayers(numberOfPlayers);
         distributeCards();
-        players[0].setPlayerID();
+        players[0].setPlayerID(1);
         players[0].setPlayerName(playerName);
         readyPlayerOne();
         if (!players[findActiveAttacker()].isHuman()) {
@@ -99,7 +100,7 @@ public class Deck {
         Player[] players = new Player[numberOfPlayers + numberOfAis];
 
         for (int i = 0; i < numberOfPlayers; i++) {
-            String name = players[i].getPlayerName() + i;
+            String name = players[i].getPlayerName() + (i + 1);
             Player player = new Player();
             player.setPlayerName(name);
             players[i] = player;
